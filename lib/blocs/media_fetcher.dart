@@ -6,3 +6,9 @@ abstract class MediaEvent extends Equatable {
 }
 
 class MediaFetched extends MediaEvent {}
+
+class MediaReviewFetched extends MediaEvent {
+  final int mediaId;
+
+  MediaReviewFetched({required this.mediaId});
+}

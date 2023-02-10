@@ -1,0 +1,90 @@
+{
+  "project_info": {
+    "project_number": "1019089180601",
+    "project_id": "castonaut",
+    "storage_bucket": "castonaut.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019089180601:android:cef1d50d1343e204f5c868",
+        "android_client_info": {
+          "package_name": "com.ashanti.application"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1019089180601-plu325cioe0o50lmudnjtanlp0of0vnh.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.ashanti.application",
+            "certificate_hash": "9bbb3186b2189ef16d8f272bdab59362c395cbb4"
+          }
+        },
+        {
+          "client_id": "1019089180601-4d775od3n9no5127sjqo9f09360o92i7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHrCHeeNyumDjj5QbgFaUYTdQMmc1Moac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1019089180601-4d775od3n9no5127sjqo9f09360o92i7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1019089180601-u8g7qb82dqhvavkh92uaokn1qqjdphpo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ashanti.castonaut"
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019089180601:android:3872d2d6a7fa860bf5c868",
+        "android_client_info": {
+          "package_name": "com.ashanti.castonaut"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1019089180601-4d775od3n9no5127sjqo9f09360o92i7.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBHrCHeeNyumDjj5QbgFaUYTdQMmc1Moac"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1019089180601-4d775od3n9no5127sjqo9f09360o92i7.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "1019089180601-u8g7qb82dqhvavkh92uaokn1qqjdphpo.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.ashanti.castonaut"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

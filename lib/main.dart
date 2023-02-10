@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:castonaut/widgets/media_info_expanded.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:http/http.dart' as http;
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
 
 import 'blocs/media_bloc.dart';
 
@@ -18,7 +20,7 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'CastOrNot',
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -45,7 +47,7 @@ class MyAppHomePage extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('CastOrNot'),
+        title: Center(child: const Text('CastOrNot')),
       ),
       body: BlocProvider(
         create: (_) => MediaBloc(mediaRepository: MediaRepository(httpClient: http.Client()))..add(MediaFetched()),
@@ -85,9 +87,12 @@ class _InfiniteScrollingListState extends State<InfiniteScrollingList> {
   }
 
   navigateToExpandedView(MediaInfo info, BuildContext context){
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => MediaInfoPage(widget.key, info)),
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) => Scaffold(
+          body: MediaInfoPage(context.widget.key, info),
+        )
+      ),
     );
   }
 
@@ -108,13 +113,13 @@ class _InfiniteScrollingListState extends State<InfiniteScrollingList> {
                 if(index < state.mediaInfo.length) {
                   children.add(
                     ElevatedButton(
-                      onPressed: navigateToExpandedView(state.mediaInfo[index], context),
+                      onPressed: () {navigateToExpandedView(state.mediaInfo[index], context);},
                       child: MediaInfoTile(info: state.mediaInfo[index])));
                 }
                 if(index+1 < state.mediaInfo.length) {
                   children.add(
                     ElevatedButton(
-                      onPressed: navigateToExpandedView(state.mediaInfo[index+1], context),
+                      onPressed: () {navigateToExpandedView(state.mediaInfo[index+1], context);},
                       child: MediaInfoTile(info: state.mediaInfo[index+1])));
                 }
                 return children.isNotEmpty ? Row(children: children,) : Container();

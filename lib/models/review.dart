@@ -1,24 +1,27 @@
-class Review {
-  final String id;
+class MediaReview {
+  final int id;
+  final int podcastId;
   final String name;
   final String review;
-  final double rating;
+  final int rating;
   final String date;
 
 
-  Review({
+  MediaReview({
     required this.id,
+    required this.podcastId,
     required this.name,
     required this.review,
     required this.rating,
     required this.date});
 
-  factory Review.fromJson(Map<String, dynamic> json) {
-    return Review(
-      id: json['id'],
+  factory MediaReview.fromJson(Map<String, dynamic> json) {
+    return MediaReview(
+      id: json['podcastId'] as int,
+      podcastId: json['podcastId'] as int,
       name: json['name'],
       review: json['review'],
-      rating: json['rating'] as double,
+      rating: json['rating'] as int,
       date: json['date'],
     );
   }

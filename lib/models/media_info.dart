@@ -8,7 +8,7 @@ class MediaInfo extends Equatable {
   final String description;
   final String thumbnailUrl;
   final String coverArtUrl;
-  final List<Review> reviews;
+  final List<MediaReview> reviews;
   final double averageRating;
   final List<Source> sources;
 
@@ -33,9 +33,13 @@ class MediaInfo extends Equatable {
       thumbnailUrl: json['thumbnailUrl'],
       coverArtUrl: json['coverArtUrl'],
       artist: json['artist'],
-      reviews: json['reviews'].map((x) => Review.fromJson(x)).toList(),
-      averageRating: json['reviews'].map((x) => Review.fromJson(x)).toList().map((x) => x.rating).reduce((x, y) => x+y)/json['reviews'].length*100,
-      sources: json['sources'].map((x) => Source.fromJson(x)).toList(),
+      reviews: json.containsKey('reviews')
+          ? json['reviews'].map((x) => MediaReview.fromJson(x)).toList()
+          : [],
+      averageRating: 7.5,//json['reviews'].map((x) => Review.fromJson(x)).toList().map((x) => x.rating).reduce((x, y) => x+y)/json['reviews'].length*100,
+      sources: json.containsKey('sources')
+          ? json['sources'].map((x) => MediaReview.fromJson(x)).toList()
+          : [],
     );
   }
 

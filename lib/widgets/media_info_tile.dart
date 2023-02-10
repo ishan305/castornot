@@ -13,13 +13,17 @@ class MediaInfoTile extends StatelessWidget {
         Image(
           image: NetworkImage(info.thumbnailUrl),
         ),
-        Text(info.title),
-        Row(
+        Column(
           children: [
-            Icon(
-              info.averageRating > 50 ? Icons.thumb_up_sharp : Icons.thumb_down_sharp,
+            Text(info.title),
+            Row(
+              children: [
+                Icon(
+                  info.averageRating > 5.0 ? Icons.thumb_up_sharp : Icons.thumb_down_sharp,
+                ),
+                Text('${info.averageRating}'),
+              ],
             ),
-            Text('${info.averageRating}'),
           ],
         ),
       ],
