@@ -2,9 +2,9 @@ import 'package:castonaut/models/media_info.dart';
 import 'package:flutter/material.dart';
 
 class MediaInfoTile extends StatelessWidget {
-  MediaInfoTile({Key? key,
+  const MediaInfoTile({Key? key,
     required this.info}) : super(key: key);
-  MediaInfo info;
+  final MediaInfo info;
 
   @override
   Widget build(BuildContext context) {

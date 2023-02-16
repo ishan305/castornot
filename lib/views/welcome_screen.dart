@@ -13,19 +13,19 @@ class WelcomeScreen extends StatelessWidget {
             const Text('Welcome to CastOrNot'),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/login');
+                Navigator.pushNamed(context, 'login_screen');
               },
               child: const Text('Login'),
             ),
             ElevatedButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/signup');
+                Navigator.pushNamed(context, 'signup_screen');
               },
               child: const Text('Sign up'),
             ),
             TextButton(
               onPressed: () {
-                Navigator.pushNamed(context, '/home');
+                Navigator.pushNamedAndRemoveUntil(context, 'home_screen', (route) => false);
               }, child: const Text('Continue')
             ),
           ],

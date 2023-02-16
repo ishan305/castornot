@@ -1,3 +1,4 @@
+// ignore_for_file: avoid_print
 import 'dart:convert';
 
 import 'package:castonaut/models/review.dart';
@@ -8,11 +9,9 @@ import 'package:http/http.dart' as http;
 import 'package:stream_transform/stream_transform.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
 
-
 part 'media_fetcher.dart';
 part 'media_state.dart';
 part 'media_review_state.dart';
-
 
 class MediaBloc extends Bloc<MediaEvent, MediaState> {
   final MediaRepository mediaRepository;
@@ -59,7 +58,6 @@ class MediaBloc extends Bloc<MediaEvent, MediaState> {
   }
 }
 
-
 class MediaReviewBloc extends Bloc<MediaEvent, MediaReviewState> {
   final MediaRepository mediaRepository;
 
@@ -93,6 +91,14 @@ class MediaReviewBloc extends Bloc<MediaEvent, MediaReviewState> {
       emitter(state.copyWith(status: MediaStatus.failure));
     }
   }
+
+  Future<void> onMediaReviewAdded(MediaReviewAdded event, Emitter<MediaReviewState> emitter) async {
+    emitter(state.copyWith(
+      status: MediaStatus.success,
+      mediaReview: List.from(state.mediaReview)..insert(0, event.review),
+      hasReachedMax: false,
+    ));
+  }
 }
 
 //TODO: Update the uri to your own backend.
@@ -118,11 +124,11 @@ class MediaRepository {
     throw Exception('error fetching media infos');
   }
 
-  Future<List<MediaReview>> fetchMediaReview(int mediaId, {int startingIndex = 0}) async {
+  Future<List<MediaReview>> fetchMediaReview(String mediaId, {int startingIndex = 0}) async {
     Uri getUrl = Uri.https(
         'mockend.com',
         '/ishan305/castornot-mockend/reviews',
-        <String, String>{'podcastid_eq': '${mediaId}','_start': '${startingIndex}', '_limit': '20'}
+        <String, String>{'podcastid_eq': mediaId,'_start': '$startingIndex', '_limit': '20'}
     );
     final response = await httpClient.get(getUrl);
     if (response.statusCode == 200) {

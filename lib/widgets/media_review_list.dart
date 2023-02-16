@@ -1,40 +1,9 @@
-import 'package:castonaut/blocs/media_bloc.dart';
-import 'package:castonaut/models/media_info.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:url_launcher/url_launcher.dart';
-import 'package:http/http.dart' as http;
-
+import 'package:castonaut/models/media_info.dart';
+import '../blocs/media_bloc.dart';
 import '../models/review.dart';
-
-class MediaInfoPage extends StatelessWidget {
-  const MediaInfoPage(Key? key, this.info) : super(key: key);
-  final MediaInfo info;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(children: [
-        Positioned.fill(child:
-          Image (
-            image: NetworkImage(info.coverArtUrl),
-            fit: BoxFit.fill,
-          ),
-        ),
-        Scaffold (
-          backgroundColor: Colors.transparent,
-          appBar: AppBar(
-            title: Text(info.title),
-          ),
-          body: BlocProvider(
-            create: (_) => MediaReviewBloc(mediaRepository: MediaRepository(httpClient: http.Client()))
-            ..add(MediaReviewFetched(mediaId: info.id)),
-            child: MediaInfoReviewScrollVew(mediaInfo: info),
-          ),
-        ),
-      ],
-    );
-  }
-}
+import 'package:url_launcher/url_launcher.dart';
 
 class MediaInfoReviewScrollVew extends StatefulWidget {
   const MediaInfoReviewScrollVew({
@@ -77,14 +46,14 @@ class _MediaInfoReviewScrollVewState extends State<MediaInfoReviewScrollVew> {
     return CustomScrollView(slivers:[
       SliverList(
         delegate: SliverChildListDelegate.fixed([
-            Container(height: 200),
-            MediaInfoExpanded(info: widget.mediaInfo),
-            Center(child: ExternalPlayButton(info: widget.mediaInfo)),
+          Container(height: 200),
+          MediaInfoExpanded(info: widget.mediaInfo),
+          Center(child: ExternalPlayButton(info: widget.mediaInfo)),
         ]),
       ),
       const MediaReviewList(),
     ],
-    controller: _scrollController,
+      controller: _scrollController,
     );
   }
 }
@@ -104,7 +73,7 @@ class MediaReviewList extends StatelessWidget {
               itemExtent: 50.0,
               delegate: SliverChildListDelegate(
                 [
-                  const Text('failed to fetch posts'),
+                  const Text('failed to fetch reviews'),
                 ],
               ),
             );
@@ -120,21 +89,23 @@ class MediaReviewList extends StatelessWidget {
               );
             }
             return SliverList(
-              delegate: SliverChildBuilderDelegate(
-                (context, index) {
-                  if (index >= state.mediaReview.length) {return Container();}
-                  return MediaReviewTile(review: state.mediaReview[index]);
-                },
-              childCount: state.hasReachedMax
-                  ? state.mediaReview.length
-                  : state.mediaReview.length + 1,
-            ));
+                delegate: SliverChildBuilderDelegate(
+                      (context, index) {
+                    if (index >= state.mediaReview.length) {return Container();}
+                    return MediaReviewTile(review: state.mediaReview[index]);
+                  },
+                  childCount: state.hasReachedMax
+                      ? state.mediaReview.length
+                      : state.mediaReview.length + 1,
+                ));
           case MediaStatus.initial:
             return SliverFixedExtentList(
               itemExtent: 50.0,
               delegate: SliverChildListDelegate(
                 [
-                  const Text('failed to fetch reviews'),
+                  const Center(
+                      child: CircularProgressIndicator(semanticsLabel: 'Circular progress indicator')
+                  ),
                 ],
               ),
             );

@@ -2,23 +2,21 @@ import 'review.dart';
 import 'package:equatable/equatable.dart';
 
 class MediaInfo extends Equatable {
-  final int id;
+  final String id;
   final String title;
   final String artist;
   final String description;
   final String thumbnailUrl;
   final String coverArtUrl;
-  final List<MediaReview> reviews;
   final double averageRating;
   final List<Source> sources;
 
 
-  MediaInfo({
+  const MediaInfo({
     required this.title,
     required this.description,
     required this.thumbnailUrl,
     required this.id,
-    required this.reviews,
     required this.coverArtUrl,
     required this.artist,
     required this.averageRating,
@@ -27,16 +25,13 @@ class MediaInfo extends Equatable {
 
   factory MediaInfo.fromJson(Map<String, dynamic> json) {
     return MediaInfo(
-      id: json['id'] as int,
+      id: json['id'],
       title: json['title'],
       description: json['description'],
       thumbnailUrl: json['thumbnailUrl'],
       coverArtUrl: json['coverArtUrl'],
       artist: json['artist'],
-      reviews: json.containsKey('reviews')
-          ? json['reviews'].map((x) => MediaReview.fromJson(x)).toList()
-          : [],
-      averageRating: 7.5,//json['reviews'].map((x) => Review.fromJson(x)).toList().map((x) => x.rating).reduce((x, y) => x+y)/json['reviews'].length*100,
+      averageRating: 7.5,
       sources: json.containsKey('sources')
           ? json['sources'].map((x) => MediaReview.fromJson(x)).toList()
           : [],
