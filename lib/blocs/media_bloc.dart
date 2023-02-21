@@ -1,13 +1,21 @@
 // ignore_for_file: avoid_print
 import 'dart:convert';
+import 'dart:async';
 
+import 'package:castonaut/models/podcast_feed.dart';
 import 'package:castonaut/models/review.dart';
+import 'package:castonaut/utils/api_key.dart';
 import 'package:equatable/equatable.dart';
 import 'package:castonaut/models/media_info.dart';
 import 'package:bloc/bloc.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:http/http.dart' as http;
 import 'package:stream_transform/stream_transform.dart';
 import 'package:bloc_concurrency/bloc_concurrency.dart';
+import 'package:convert/convert.dart';
+import 'package:crypto/crypto.dart';
+
+import '../utils/api_secret.dart';
 
 part 'media_fetcher.dart';
 part 'media_state.dart';
@@ -33,21 +41,21 @@ class MediaBloc extends Bloc<MediaEvent, MediaState> {
     if (state.hasReachedMax) return;
     try {
       if (state.status == MediaStatus.initial) {
-        final mediaInfo = await mediaRepository.fetchMediaInfo();
+        final mediaInfo = await mediaRepository.fetchTrendingMediaInfo();
         emitter(state.copyWith(
           status: MediaStatus.success,
           mediaInfo: mediaInfo,
           hasReachedMax: false,
         ));
       }
-      final posts = await mediaRepository.fetchMediaInfo(
-        startingIndex: state.mediaInfo.length,
+      final posts = await mediaRepository.fetchTrendingMediaInfo(
+        currentIndex: state.mediaInfo.length,
       );
       emitter(posts.isEmpty
           ? state.copyWith(hasReachedMax: true)
           : state.copyWith(
         status: MediaStatus.success,
-        mediaInfo: List.from(state.mediaInfo)..addAll(posts),
+        mediaInfo: posts,
         hasReachedMax: false,
       ));
 
@@ -64,6 +72,7 @@ class MediaReviewBloc extends Bloc<MediaEvent, MediaReviewState> {
   MediaReviewBloc({required this.mediaRepository})
       : super(const MediaReviewState()) {
     on<MediaReviewFetched>(onMediaReviewFetched);
+    on<MediaReviewAdded>(onMediaReviewAdded);
   }
 
   Future<void> onMediaReviewFetched(MediaReviewFetched event, Emitter<MediaReviewState> emitter) async {
@@ -124,12 +133,55 @@ class MediaRepository {
     throw Exception('error fetching media infos');
   }
 
-  Future<List<MediaReview>> fetchMediaReview(String mediaId, {int startingIndex = 0}) async {
+  Map<String, String> createHeaderForPodcastIndex() {
+    String apiKey = ApiKey().key!;
+    String apiSecret = ApiSecret().secret!;
+    String currentUnixTime = (DateTime.now().millisecondsSinceEpoch / 1000).round().toString();
+
+    var output = AccumulatorSink<Digest>();
+    var input = sha1.startChunkedConversion(output);
+    input.add(utf8.encode(apiKey));
+    input.add(utf8.encode(apiSecret));
+    input.add(utf8.encode(currentUnixTime));
+    input.close();
+    var digest = output.events.single;
+
+    return {
+      "X-Auth-Date": currentUnixTime,
+      "X-Auth-Key": apiKey,
+      "Authorization": digest.toString(),
+      "User-Agent": "SomethingAwesome/1.0.1"
+    };
+  }
+
+  Future<List<MediaInfo>> fetchTrendingMediaInfo({int currentIndex = 0}) async {
+    Map<String, String> headers = createHeaderForPodcastIndex();
     Uri getUrl = Uri.https(
-        'mockend.com',
-        '/ishan305/castornot-mockend/reviews',
-        <String, String>{'podcastid_eq': mediaId,'_start': '$startingIndex', '_limit': '20'}
+        'api.podcastindex.org',
+        '/api/1.0/podcasts/trending',
+        <String, String>{'max': '${currentIndex+20}'}
     );
+    final response = await httpClient.get(getUrl, headers: headers);
+    if (response.statusCode == 200) {
+      final podcastFeedList = json.decode(response.body)["feeds"] as List;
+      return podcastFeedList.map((dynamic json) {
+        Map<String, dynamic> map = json as Map<String, dynamic>;
+        PodcastFeed podcastFeed = PodcastFeed.fromJson(map);
+        return MediaInfo.fromPodcastFeed(podcastFeed);
+      }).toList();
+    }
+    throw Exception('error fetching trending media');
+  }
+
+  Future<List<MediaReview>> fetchMediaReview(String mediaId, {int startingIndex = 0}) async {
+    DatabaseReference dbRef = FirebaseDatabase.instance. ('podcasts/$mediaId/reviews');
+    dbRe .startAt(startingIndex.toString()).limitToFirst(20).once().then((DataSnapshot snapshot) {
+      Map<dynamic, dynamic> values = snapshot.value;
+      values.forEach((key, values) {
+        print(values);
+      });
+    });
+
     final response = await httpClient.get(getUrl);
     if (response.statusCode == 200) {
       final body = json.decode(response.body) as List;

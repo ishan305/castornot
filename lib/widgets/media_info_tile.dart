@@ -1,5 +1,6 @@
 import 'package:castonaut/models/media_info.dart';
 import 'package:flutter/material.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class MediaInfoTile extends StatelessWidget {
   const MediaInfoTile({Key? key,
@@ -8,22 +9,19 @@ class MediaInfoTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return Column(
       children: [
-        Image(
-          image: NetworkImage(info.thumbnailUrl),
-        ),
-        Column(
+        CachedNetworkImage(
+          imageUrl: info.thumbnailUrl,
+          fit: BoxFit.cover,
+          placeholder: (context, url) => const CircularProgressIndicator(),),
+        Text(info.title),
+        Row(
           children: [
-            Text(info.title),
-            Row(
-              children: [
-                Icon(
-                  info.averageRating > 5.0 ? Icons.thumb_up_sharp : Icons.thumb_down_sharp,
-                ),
-                Text('${info.averageRating}'),
-              ],
+            Icon(
+              info.averageRating > 5.0 ? Icons.thumb_up_sharp : Icons.thumb_down_sharp,
             ),
+            Text('${info.averageRating}'),
           ],
         ),
       ],

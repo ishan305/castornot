@@ -1,3 +1,5 @@
+import 'package:castonaut/models/podcast_feed.dart';
+
 import 'review.dart';
 import 'package:equatable/equatable.dart';
 
@@ -35,6 +37,22 @@ class MediaInfo extends Equatable {
       sources: json.containsKey('sources')
           ? json['sources'].map((x) => MediaReview.fromJson(x)).toList()
           : [],
+    );
+  }
+
+  factory MediaInfo.fromPodcastFeed(PodcastFeed podcastFeed) {
+    return MediaInfo(
+      id: podcastFeed.id.toString(),
+      title: podcastFeed.title!,
+      description: podcastFeed.description!,
+      thumbnailUrl: podcastFeed.image!,
+      coverArtUrl: podcastFeed.artwork!,
+      artist: podcastFeed.author!,
+      averageRating: podcastFeed.trendScore!.toDouble(),
+      sources: [
+        Source(name: "Feed", url: podcastFeed.url!),
+        //Source(name: "Itunes", url: podcastFeed.itunesId!.toString())
+      ],
     );
   }
 

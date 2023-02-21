@@ -2,8 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:castonaut/models/media_info.dart';
 import '../blocs/media_bloc.dart';
-import '../models/review.dart';
 import 'package:url_launcher/url_launcher.dart';
+
+import 'media_review_tile.dart';
 
 class MediaInfoReviewScrollVew extends StatefulWidget {
   const MediaInfoReviewScrollVew({
@@ -111,37 +112,6 @@ class MediaReviewList extends StatelessWidget {
             );
         }
       },
-    );
-  }
-}
-
-class MediaReviewTile extends StatelessWidget{
-  const MediaReviewTile({
-    super.key,
-    required this.review,
-  });
-
-  final MediaReview review;
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Column(
-          children: [
-            Text(review.name),
-            Text(review.review),
-          ],
-        ),
-        Column(
-          children: [
-            Icon(
-              review.rating > 5.0 ? Icons.thumb_up_sharp : Icons.thumb_down_sharp,
-            ),
-            Text('${review.rating}'),
-          ],
-        ),
-      ],
     );
   }
 }

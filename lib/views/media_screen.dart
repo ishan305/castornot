@@ -16,21 +16,22 @@ void onAddReviewPressed(BuildContext context, MediaInfo mediaInfo) {
   int rating = -1;
 
   showSimpleModalDialog(context, [
-    const Text('Add Review'),
+    Text('Add your review for ${mediaInfo.title}', textAlign: TextAlign.center,),
     TextField(onChanged: (value) => review = value),
     ElevatedButton(
         onPressed: () {
           //TODO: validate the data
           User? user = FirebaseAuth.instance.currentUser;
-          DatabaseReference dbRef = FirebaseDatabase.instance.ref('podcasts/{$mediaInfo.id}/reviews');
+          DatabaseReference dbRef = FirebaseDatabase.instance.ref('podcasts/${mediaInfo.id}/reviews');
+          String reviewID = const Uuid().v4();
           MediaReview userReview = MediaReview(
               podcastId: mediaInfo.id,
               rating: rating,
               review: review,
-              userId: user!.uid, id: const Uuid().toString(), name: user.email!, date: DateTime.now().toString());
+              userId: user!.uid, id: reviewID, name: user.email!, date: DateTime.now().toString());
 
           saveReviewToDB(dbRef, userReview);
-          context.read<MediaReviewBloc>().add(MediaReviewFetched(mediaId: widget.mediaInfo.id));
+          context.read<MediaReviewBloc>().add(MediaReviewAdded(mediaId: mediaInfo.id, review: userReview));
 
           Navigator.of(context).pop();
         },
@@ -51,35 +52,50 @@ class MediaInfoPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return
-      BlocProvider(
-        create: (_) => MediaReviewBloc(mediaRepository: MediaRepository(httpClient: http.Client()))
-          ..add(MediaReviewFetched(mediaId: info.id)),
-        child: Stack(children: [
+    return BlocProvider(
+      create: (_) => MediaReviewBloc(mediaRepository: MediaRepository(httpClient: http.Client()))
+        ..add(MediaReviewFetched(mediaId: info.id)),
+      child: MediaReviewScaffold(info: info),
+    );
+  }
+}
+
+class MediaReviewScaffold extends StatelessWidget {
+  const MediaReviewScaffold({
+    super.key,
+    required this.info,
+  });
+
+  final MediaInfo info;
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold (
+      backgroundColor: Colors.transparent,
+      appBar: AppBar(
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
+          onPressed: () => Navigator.of(context).pop(),
+        ),
+        title: Text(info.title),
+        centerTitle: true,
+      ),
+      body: Stack (
+        alignment: Alignment.bottomRight,
+        children: [
           Positioned.fill(child:
             Image (
               image: NetworkImage(info.coverArtUrl),
               fit: BoxFit.fill,
             ),
           ),
-          Scaffold (
-            backgroundColor: Colors.transparent,
-            appBar: AppBar(
-                leading: IconButton(
-                  icon: const Icon(Icons.arrow_back_ios, color: Colors.black),
-                  onPressed: () => Navigator.of(context).pop(),
-                ),
-                title: Text(info.title),
-                centerTitle: true,
-            ),
-            body: MediaInfoReviewScrollVew(mediaInfo: info),
-          ),
+          MediaInfoReviewScrollVew(mediaInfo: info),
           FloatingActionButton.extended(
-              onPressed: () {
-                onAddReviewPressed(context, info);
-              },
-              icon: const Icon(Icons.add),
-              label: const Text('Add Review')),
+            onPressed: () {
+              onAddReviewPressed(context, info);
+            },
+            icon: const Icon(Icons.add),
+            label: const Text('Add Review')),
         ],
       ),
     );

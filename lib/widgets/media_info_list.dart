@@ -54,22 +54,17 @@ class _InfiniteScrollingListState extends State<InfiniteScrollingList> {
               if(state.mediaInfo.isEmpty) {
                 return const Center(child: Text('no posts'));
               }
-              return ListView.builder(
+              return GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  childAspectRatio: 0.7,
+                ),
                 itemBuilder: (context, index) {
-                  List<Widget> children = [];
-                  if(index < state.mediaInfo.length) {
-                    children.add(
-                        ElevatedButton(
+                  return index < state.mediaInfo.length
+                      ? ElevatedButton(
                             onPressed: () {_navigateToExpandedView(state.mediaInfo[index], context);},
-                            child: MediaInfoTile(info: state.mediaInfo[index])));
-                  }
-                  if(index+1 < state.mediaInfo.length) {
-                    children.add(
-                        ElevatedButton(
-                            onPressed: () {_navigateToExpandedView(state.mediaInfo[index+1], context);},
-                            child: MediaInfoTile(info: state.mediaInfo[index+1])));
-                  }
-                  return children.isNotEmpty ? Row(children: children,) : Container();
+                            child: MediaInfoTile(info: state.mediaInfo[index]))
+                      : const Center(child: CircularProgressIndicator(semanticsLabel: 'Circular progress indicator'));
                 },
                 itemCount: state.hasReachedMax
                     ? state.mediaInfo.length

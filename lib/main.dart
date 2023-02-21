@@ -1,3 +1,5 @@
+import 'package:castonaut/utils/api_key.dart';
+import 'package:castonaut/utils/api_secret.dart';
 import 'package:castonaut/views/home_screen.dart';
 import 'package:castonaut/views/login_screen.dart';
 import 'package:castonaut/views/signup_screen.dart';
@@ -5,11 +7,38 @@ import 'package:castonaut/views/welcome_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
+import 'dart:io';
+import 'package:yaml/yaml.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 
 void main() async {
+
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform,);
+
+  FirebaseRemoteConfig remoteConfig = FirebaseRemoteConfig.instance;
+  await remoteConfig.setConfigSettings(RemoteConfigSettings(
+    fetchTimeout: const Duration(minutes: 1),
+    minimumFetchInterval: const Duration(hours: 1),
+  ));
+  await remoteConfig.fetchAndActivate();
+
+  await setApiKey(remoteConfig);
+  await setApiSecret(remoteConfig);
   runApp(const CastOrNot());
+}
+
+//TODO: These two methods can be morphed into a single method.
+Future<void> setApiKey(FirebaseRemoteConfig remoteConfig) async {
+  ApiKey apiKey = ApiKey();
+  String apiKeyString = remoteConfig.getString('podcast_index_api_key');
+  apiKey.setKey(apiKeyString);
+}
+
+Future<void> setApiSecret(FirebaseRemoteConfig remoteConfig) async {
+  ApiSecret apiSecret = ApiSecret();
+  String apiSecretString = remoteConfig.getString('podcast_index_api_secret');
+  apiSecret.setSecret(apiSecretString);
 }
 
 class CastOrNot extends StatelessWidget {
